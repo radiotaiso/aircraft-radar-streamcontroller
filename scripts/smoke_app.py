@@ -23,7 +23,7 @@ APP = Path("/usr/lib/streamcontroller")
 TMP = Path(tempfile.mkdtemp(prefix="adskey-smoke-"))
 PLUGINS = TMP / "data" / "plugins"
 PLUGINS.mkdir(parents=True)
-(PLUGINS / "com_idimw_adskey").symlink_to(ROOT)
+(PLUGINS / "com_aircraft_radar").symlink_to(ROOT)
 
 sys.argv = ["streamcontroller", "--data", str(TMP / "data")]
 os.chdir(APP)
@@ -53,14 +53,14 @@ def main() -> None:
     manager = PluginManager()
     manager.load_plugins()
 
-    check("plugin registered", "com_idimw_adskey" in PluginBase.plugins, str(list(PluginBase.disabled_plugins)))
-    check("plugin not disabled", "com_idimw_adskey" not in PluginBase.disabled_plugins)
-    ours = [c for c in PluginBase.__subclasses__() if c.__module__.startswith("plugins.com_idimw_adskey")]
+    check("plugin registered", "com_aircraft_radar" in PluginBase.plugins, str(list(PluginBase.disabled_plugins)))
+    check("plugin not disabled", "com_aircraft_radar" not in PluginBase.disabled_plugins)
+    ours = [c for c in PluginBase.__subclasses__() if c.__module__.startswith("plugins.com_aircraft_radar")]
     check("exactly one PluginBase subclass", len(ours) == 1, str(ours))
-    if "com_idimw_adskey" not in PluginBase.plugins:
+    if "com_aircraft_radar" not in PluginBase.plugins:
         return
 
-    plugin = PluginBase.plugins["com_idimw_adskey"]["object"]
+    plugin = PluginBase.plugins["com_aircraft_radar"]["object"]
     check("plugin.registered", plugin.registered)
     check("app version is the one the plan targets", gl.app_version == "1.5.0-beta.16", gl.app_version)
     check("plugin settings enabled", plugin.has_plugin_settings)
@@ -69,10 +69,10 @@ def main() -> None:
     holders = sorted(plugin.action_holders)
     check(
         "three action holders",
-        holders == ["com_idimw_adskey::RadarList", "com_idimw_adskey::RadarScope", "com_idimw_adskey::RadarTile"],
+        holders == ["com_aircraft_radar::RadarList", "com_aircraft_radar::RadarScope", "com_aircraft_radar::RadarTile"],
         str(holders),
     )
-    from plugins.com_idimw_adskey.radar import mapdata
+    from plugins.com_aircraft_radar.radar import mapdata
 
     check("map data loaded at startup", mapdata.default().line_count > 500, str(mapdata.default().line_count))
     check("service thread running", plugin.service._thread is not None and plugin.service._thread.is_alive())
@@ -82,7 +82,7 @@ def main() -> None:
 
     plugin.set_settings({"first-setup": False})
     plugin.update_config(radius_km=150)
-    stored = json.loads((TMP / "data" / "settings" / "plugins" / "com_idimw_adskey" / "settings.json").read_text())
+    stored = json.loads((TMP / "data" / "settings" / "plugins" / "com_aircraft_radar" / "settings.json").read_text())
     check("settings file is v2.0", stored.get("file-version") == "2.0", str(stored))
     check("first-setup preserved", stored["settings"].get("first-setup") is False, str(stored))
     check("config persisted", stored["settings"].get("radius_km") == 150 and stored["settings"].get("lat") == 32.5424, str(stored))
@@ -111,7 +111,7 @@ def main() -> None:
     painted: dict[tuple[int, int], list] = {}
 
     def make(kind: str, x: int, y: int):
-        holder = plugin.action_holders[f"com_idimw_adskey::{kind}"]
+        holder = plugin.action_holders[f"com_aircraft_radar::{kind}"]
         action = holder.action_core(
             action_id=holder.action_id,
             action_name=holder.action_name,
@@ -150,7 +150,7 @@ def main() -> None:
     check("the list key paints a 72x72 frame", painted[(2, 0)][-1].size == (72, 72) and painted[(2, 0)][-1].mode == "RGB")
     check("the list is not the radar scope", painted[(2, 0)][-1].tobytes() != painted[(3, 0)][-1].tobytes())
 
-    from plugins.com_idimw_adskey.radar.render import crop_tile, render_warning
+    from plugins.com_aircraft_radar.radar.render import crop_tile, render_warning
 
     frame = plugin.frames.get(plugin.service.snapshot(), 144)
     expected = {(3, 1): (0, 0), (4, 1): (1, 0), (3, 2): (0, 1), (4, 2): (1, 1)}
@@ -213,7 +213,7 @@ def main() -> None:
     check("map size writes the view", snap.config.view == "full" and snap.config.full)
     check("full view asks the API for the corner radius", abs(snap.config.fetch_radius_km - 200 * 2 ** 0.5) < 1e-6, str(snap.config.fetch_radius_km))
     check("full view changes what the keys draw", plugin.frames.get(snap, 144).tobytes() != radar_frame)
-    stored_view = json.loads((TMP / "data" / "settings" / "plugins" / "com_idimw_adskey" / "settings.json").read_text())["settings"]
+    stored_view = json.loads((TMP / "data" / "settings" / "plugins" / "com_aircraft_radar" / "settings.json").read_text())["settings"]
     check("the view reaches the settings file", stored_view.get("view") == "full", str(stored_view))
 
     plugin.service._raw = ()
@@ -239,7 +239,7 @@ def main() -> None:
         _after != before_corner,
         f"aircraft={_snap.aircraft!r} corner={_snap.config.count_corner} view={_snap.config.view} version={_snap.version}",
     )
-    stored_corner = json.loads((TMP / "data" / "settings" / "plugins" / "com_idimw_adskey" / "settings.json").read_text())["settings"]
+    stored_corner = json.loads((TMP / "data" / "settings" / "plugins" / "com_aircraft_radar" / "settings.json").read_text())["settings"]
     check("the corner reaches the settings file", stored_corner.get("count_corner") == "top-left", str(stored_corner))
     corner_row.set_selected(0)
 
@@ -283,7 +283,7 @@ def main() -> None:
     check("toggling the map changes what the keys draw", with_map != without_map)
     switches["Show map outline"].set_active(True)
 
-    from plugins.com_idimw_adskey.radar.adsb import Aircraft
+    from plugins.com_aircraft_radar.radar.adsb import Aircraft
 
     plugin.service._raw = (
         Aircraft(hex="aa0001", lat=plugin.service.snapshot().config.lat + 0.012, lon=plugin.service.snapshot().config.lon + 0.010, callsign="TEST1", alt_ft=10000),
@@ -300,14 +300,14 @@ def main() -> None:
     check("the color switch writes the config", plugin.service.snapshot().config.colored is False)
     check("the color switch repaints the radar", plugin.frames.get(plugin.service.snapshot(), 72).tobytes() != radar_before)
     check("the color switch repaints the list", plugin.list_frames.get(plugin.service.snapshot(), 72).tobytes() != list_before)
-    stored_colored = json.loads((TMP / "data" / "settings" / "plugins" / "com_idimw_adskey" / "settings.json").read_text())["settings"]
+    stored_colored = json.loads((TMP / "data" / "settings" / "plugins" / "com_aircraft_radar" / "settings.json").read_text())["settings"]
     check("the color choice reaches the settings file", stored_colored.get("colored") is False, str(stored_colored))
     switches["Colored aircraft"].set_active(True)
     spins = [r for r in rows if isinstance(r, Adw.SpinRow)]
     lat_row = next(r for r in spins if r.get_title() == "Latitude")
     lat_row.set_value(19.4326)
     check("spin row writes latitude", plugin.service.snapshot().config.lat == 19.4326)
-    final = json.loads((TMP / "data" / "settings" / "plugins" / "com_idimw_adskey" / "settings.json").read_text())["settings"]
+    final = json.loads((TMP / "data" / "settings" / "plugins" / "com_aircraft_radar" / "settings.json").read_text())["settings"]
     check(
         "UI edits reach the settings file",
         final["radius_km"] == 200

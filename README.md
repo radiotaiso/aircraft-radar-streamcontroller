@@ -47,7 +47,7 @@ never used.
   nor counted.
 
 Settings live in
-`~/.var/app/com.core447.StreamController/data/settings/plugins/com_idimw_adskey/settings.json`
+`~/.var/app/com.core447.StreamController/data/settings/plugins/com_aircraft_radar/settings.json`
 and can be edited by hand.
 
 To run a local checkout instead of the store version, see

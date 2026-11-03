@@ -7,14 +7,14 @@ users the supported path is the StreamController store.
 
 ```
 git clone git@github.com:radiotaiso/aircraft-radar-streamcontroller.git ~/src/aircraft-radar
-ln -s ~/src/aircraft-radar ~/.var/app/com.core447.StreamController/data/plugins/com_idimw_adskey
+ln -s ~/src/aircraft-radar ~/.var/app/com.core447.StreamController/data/plugins/com_aircraft_radar
 ```
 
 Then restart StreamController and add the actions to a page.
 
 Two details that bite:
 
-- The symlink **must be named after the plugin id** (`com_idimw_adskey`): the app
+- The symlink **must be named after the plugin id** (`com_aircraft_radar`): the app
   derives the settings directory from the folder name.
 - Plugins are imported once at startup. After editing a `.py` file you have to
   restart the app; there is no hot reload.

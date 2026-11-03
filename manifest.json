@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "thumbnail": "store/Thumbnail.png",
-    "id": "com_idimw_adskey",
+    "id": "com_aircraft_radar",
     "name": "Aircraft Radar",
     "descriptions": {
         "en_US": "Live aircraft around a point you choose, on one key or a 2x2 block of keys, with a list of the nearest flights. The nearest aircraft are colored and listed over a dim world map outline. Data comes from community ADS-B (and MLAT) receivers via api.adsb.lol; the map outline is Natural Earth 1:10m. No API key is needed and all radar keys share a single poll."

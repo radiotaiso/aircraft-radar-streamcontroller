@@ -1,0 +1,20 @@
+{
+    "plugin": {
+        "description": "Shows the aircraft around a configurable point on the deck, as a 1-key scope or a 2x2 radar. Data comes from api.adsb.lol and is polled by a single shared service, so any number of radar keys cost one request per interval.",
+        "requirements": "Internet access. Latitude, longitude, radius, refresh interval and the ground-traffic filter are set once in the plugin settings (Settings > Plugins > Aircraft Radar), not per key."
+    },
+    "actions": {
+        "RadarScope": {
+            "description": "A single-key radar. Place it on its own, not next to other Radar (1 key) actions. Tapping it cycles the radius through 25, 50, 100, 150 and 200 km. It updates itself and needs no trigger.",
+            "settings": {}
+        },
+        "RadarTile": {
+            "description": "One quarter of a 2x2 radar. Place four of them as an aligned 2x2 block; the block shape is detected automatically and each key draws its own quarter. Any other shape shows an exclamation mark. Tapping any tile cycles the radius.",
+            "settings": {}
+        },
+        "RadarList": {
+            "description": "A single key listing the nearest aircraft: color swatch, callsign and distance in km. The swatch color matches the same aircraft on the radar keys, so a row and a dot can be paired. Tapping it cycles the radius like the other radar actions.",
+            "settings": {}
+        }
+    }
+}

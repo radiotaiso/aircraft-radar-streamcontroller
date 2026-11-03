@@ -1,0 +1,18 @@
+{
+    "generic": {
+        "copyright": "radiotaiso",
+        "original-url": "https://github.com/radiotaiso/aircraft-radar-streamcontroller",
+        "license": "GPL-3.0",
+        "license-url": "https://www.gnu.org/licenses/gpl-3.0.txt",
+        "description": "Aircraft Radar plugin for StreamController: live aircraft on one key or a 2x2 block, with a Natural Earth map outline. Data from community ADS-B/MLAT receivers via api.adsb.lol.",
+        "license-description": null
+    },
+    "data/map.json": {
+        "copyright": "Natural Earth",
+        "original-url": "https://www.naturalearthdata.com",
+        "license": "Public domain",
+        "license-url": "https://www.naturalearthdata.com/about/terms-of-use/",
+        "description": "Coastlines, lakes, admin-1 state/province lines and urban areas, clipped and simplified by scripts/build_map.py.",
+        "license-description": null
+    }
+}

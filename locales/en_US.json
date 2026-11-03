@@ -1,0 +1,6 @@
+{
+    "plugin.name": "Aircraft Radar",
+    "actions.radar-scope.name": "Radar (1 key)",
+    "actions.radar-tile.name": "Radar (2x2 tile)",
+    "actions.radar-list.name": "Radar list (1 key)"
+}

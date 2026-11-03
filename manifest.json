@@ -4,7 +4,7 @@
     "id": "com_idimw_adskey",
     "name": "Aircraft Radar",
     "descriptions": {
-        "en_US": "Live aircraft around a point you choose, on one key or a 2x2 block of keys. Nearest aircraft are colored and listed, over a dim world map outline. Data comes from community ADS-B (and MLAT) receivers via api.adsb.lol."
+        "en_US": "Live aircraft around a point you choose, on one key or a 2x2 block of keys, with a list of the nearest flights. The nearest aircraft are colored and listed over a dim world map outline. Data comes from community ADS-B (and MLAT) receivers via api.adsb.lol; the map outline is Natural Earth 1:10m. No API key is needed and all radar keys share a single poll."
     },
     "short-descriptions": {
         "en_US": "Live aircraft radar (ADS-B / MLAT)"
@@ -17,6 +17,6 @@
     "minimum-app-version": "1.5.0",
     "app-version": "1.5.0-beta.16",
     "github": "https://github.com/radiotaiso/aircraft-radar-streamcontroller",
-    "description": "Live aircraft around a point you choose, on one key or a 2x2 block of keys. Nearest aircraft are colored and listed, over a dim world map outline. Data comes from community ADS-B (and MLAT) receivers via api.adsb.lol.",
+    "description": "Live aircraft around a point you choose, on one key or a 2x2 block of keys, with a list of the nearest flights. The nearest aircraft are colored and listed over a dim world map outline. Data comes from community ADS-B (and MLAT) receivers via api.adsb.lol; the map outline is Natural Earth 1:10m. No API key is needed and all radar keys share a single poll.",
     "short-description": "Live aircraft radar (ADS-B / MLAT)"
 }

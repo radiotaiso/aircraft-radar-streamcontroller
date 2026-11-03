@@ -91,29 +91,22 @@ def build(center: tuple[float, float], radius_km: float, planes: list[adsb.Aircr
     canvas = backdrop()
     draw = ImageDraw.Draw(canvas)
 
-    plate = (520, 16, 968, 344)
+    plate = (496, 14, 992, 346)
     draw.rounded_rectangle(plate, radius=20, fill=(9, 9, 13), outline=(46, 46, 58), width=1)
 
     scope = render.render_radar(planes, center, radius_km, 72, show_map=True, colored=True, full=True)
     mosaic = render.render_radar(planes, center, radius_km, 144, show_map=True, colored=True, full=True)
     listing = render.render_list(planes, center, radius_km, 72, colored=True)
 
-    content_x = 548
-    paste_key(canvas, scope, (content_x, 30))
-    paste_key(canvas, listing, (content_x, 186))
-    paste_key(canvas, mosaic, (704, 36))
+    left = 522
+    paste_key(canvas, scope, (left, 30))
+    paste_key(canvas, listing, (left, 186))
+    paste_key(canvas, mosaic, (678, 36))
 
     title = font(BOLD, 52)
     subtitle = font(REGULAR, 24)
-    detail = font(REGULAR, 17)
-    credit = font(REGULAR, 15)
-
-    draw.text((56, 96), "Aircraft Radar", font=title, fill=(245, 245, 250), anchor="lt")
-    draw.rounded_rectangle([56, 168, 156, 173], radius=2, fill=render.PALETTE[4])
-    draw.text((56, 190), "Live aircraft on your Stream Deck", font=subtitle, fill=(205, 205, 214), anchor="lt")
-    draw.text((56, 234), "one key · 2x2 block · list", font=detail, fill=(150, 150, 162), anchor="lt")
-    draw.text((56, 258), "world map · colored by distance", font=detail, fill=(150, 150, 162), anchor="lt")
-    draw.text((56, 320), "Data: api.adsb.lol  ·  Map: Natural Earth", font=credit, fill=(118, 118, 130), anchor="lt")
+    draw.text((56, 132), "Aircraft Radar", font=title, fill=(245, 245, 250), anchor="lt")
+    draw.text((56, 202), "Live feed", font=subtitle, fill=(170, 170, 182), anchor="lt")
     return canvas
 
 
@@ -127,12 +120,14 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.live:
-        planes = [plane for plane in adsb.Client().fetch(args.lat, args.lon, args.km) if not plane.on_ground]
-        nearest = render.nearest_planes(planes, (args.lat, args.lon), args.km, limit=10)
-        planes = [plane for _, plane in nearest]
-        print(f"{len(planes)} aircraft kept (nearest 10 of the fetch)")
+        try:
+            fetched = [plane for plane in adsb.Client().fetch(args.lat, args.lon, args.km) if not plane.on_ground]
+            planes = [plane for _, plane in render.nearest_planes(fetched, (args.lat, args.lon), args.km, limit=10)]
+            print(f"{len(planes)} aircraft kept (nearest 10 of the fetch)")
+        except Exception as exc:
+            print(f"live fetch failed ({exc}); using synthetic aircraft")
+            planes = []
         if not planes:
-            print("no aircraft in range; falling back to synthetic ones")
             planes = demo_aircraft(args.lat, args.lon, args.km)
     else:
         planes = demo_aircraft(args.lat, args.lon, args.km)

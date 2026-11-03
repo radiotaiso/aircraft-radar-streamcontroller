@@ -64,7 +64,7 @@ def main() -> None:
     check("plugin.registered", plugin.registered)
     check("app version is the one the plan targets", gl.app_version == "1.5.0-beta.16", gl.app_version)
     check("plugin settings enabled", plugin.has_plugin_settings)
-    check("display name is Aircraft", plugin.plugin_name == "Aircraft", plugin.plugin_name)
+    check("display name is Aircraft Radar", plugin.plugin_name == "Aircraft Radar", plugin.plugin_name)
     check("manifest name matches", plugin.get_manifest().get("name") == "Aircraft Radar", plugin.get_manifest().get("name"))
     holders = sorted(plugin.action_holders)
     check(
@@ -177,7 +177,7 @@ def main() -> None:
 
     group = plugin.get_settings_area()
     check("settings area is an Adw.PreferencesGroup", isinstance(group, Adw.PreferencesGroup))
-    check("settings group uses the display name", group.get_title() == "Aircraft", group.get_title())
+    check("settings group uses the display name", group.get_title() == "Aircraft Radar", group.get_title())
     rows = []
     child = group.get_first_child()
 

@@ -1,4 +1,4 @@
-# sc-adskey
+# Aircraft Radar
 
 Live aircraft radar for [StreamController](https://github.com/StreamController/StreamController)
 (Stream Deck). Three actions:
@@ -19,17 +19,16 @@ state borders and urban areas from [Natural Earth](https://www.naturalearthdata.
 (public domain, bundled, no API key, no network needed for the map). The outline
 covers the whole world, so the plugin works wherever the user is.
 
-## Install
+## Installing
 
-```
-ln -s ~/src/sc-adskey ~/.var/app/com.core447.StreamController/data/plugins/com_idimw_adskey
-```
+Install it from the StreamController store: open **Plugins → Store**, search for
+"Aircraft Radar" and install it. Then drop any of the three actions on your deck.
 
-Restart StreamController. Add the actions to your page; the plugin settings
-(Settings > Plugins > Aircraft Radar) open the first time. Latitude, longitude,
-radius, refresh interval, "hide aircraft on the ground", "show map outline",
-"map size", "count position" and "colored aircraft" are set once and apply to
-every radar key. With colours on, the six nearest aircraft and the six list rows
+The first time you add a radar action, the plugin settings window opens.
+Latitude, longitude, radius, refresh interval, "hide aircraft on the ground",
+"show map outline", "map size", "count position" and "colored aircraft" are set
+once and apply to every radar key. The default center is `0, 0`, so set your
+location there. With colours on, the six nearest aircraft and the six list rows
 share a palette (red, orange, yellow, green, blue, violet); turning it off draws
 everything in white.
 
@@ -45,12 +44,14 @@ never used.
   included. The radius is the distance to the straight edge, so the corners reach
   `radius * sqrt(2)`; the plugin fetches that larger circle from the API (still
   under the 250 nm cap) and any aircraft outside the visible square are not drawn
-  nor counted. The default center is `0, 0`; set your own location in the plugin
-settings (the window opens the first time you add an action).
+  nor counted.
 
 Settings live in
 `~/.var/app/com.core447.StreamController/data/settings/plugins/com_idimw_adskey/settings.json`
 and can be edited by hand.
+
+To run a local checkout instead of the store version, see
+[DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Key states
 
@@ -66,71 +67,17 @@ The list key shows `--` before the first fetch, `0` when nothing is in range and
 dotted border when the data is stale. If a callsign is too long for its row, the
 distance is dropped first; the callsign itself is only truncated as a last resort.
 
-The map outline covers the whole world (`data/map.json`, 4 MB, Natural Earth 1:10m
-simplified to 0.02 degrees and stored as flat coordinate arrays). It costs about
-4 MB of RAM and 125 ms to load once. To ship a smaller build for one region:
+## Map outline
 
-```
-python3 scripts/build_map.py --bbox W S E N     # e.g. --bbox -10 35 5 45
-```
-
-This downloads about 64 MB of Natural Earth data once and rewrites
-`data/map.json`. If the data file is missing the plugin still draws the radar,
-just without an outline.
-
-## Publishing to the StreamController store
-
-Verified against StreamController 1.5.0-beta.16 and the store repo as of 2026-11-01.
-
-1. Push this repository to a **public** GitHub repo. The store reads `manifest.json`
-   and `attribution.json` from the root at the commit you pin.
-2. Fork [StreamController/StreamController-Store](https://github.com/StreamController/StreamController-Store).
-3. Add one entry to `Plugins.json` **on the `main` branch** (that is the branch the
-   app selects for 1.5.0-beta.16; the mapping lives in `versions.json` on the
-   `versions` branch):
-
-```json
-{ "url": "https://github.com/idimw/sc-adskey", "hash": "<commit sha of the release>" }
-```
-
-4. Open a pull request against `main` and wait for approval (usually a few hours).
-
-To ship an update: push the new commit and update the `hash` with another PR.
-Requirements the store checks: `manifest.json` (name, version, app-version,
-minimum-app-version, id, github, thumbnail, descriptions, short-descriptions,
-tags) and `attribution.json` with a `generic` key. `about.json` is optional.
-No `requirements.txt` is needed: the plugin only uses modules the app already
-ships (Pillow, requests, loguru, PyGObject).
-
-## Renaming the plugin id
-
-Renaming the package breaks every action already placed on a deck, because pages
-store the action ids. Use the migration script (it backs up each file it
-rewrites and is safe to run twice):
-
-```
-python3 scripts/migrate_plugin_id.py --dry-run
-python3 scripts/migrate_plugin_id.py
-```
+The outline is bundled with the plugin (`data/map.json`): Natural Earth 1:10m
+coastlines, lakes, state/province borders and urban areas, simplified to 0.02
+degrees. It needs no network and no API key, weighs about 4 MB, uses about 4 MB
+of RAM and takes ~125 ms to load once at startup. If the file is missing the
+radar still works, just without an outline.
 
 ## Development
 
-```
-python3 -m unittest discover -s tests -t .                      # unit tests, no network
-python3 scripts/render.py --demo --size 144 --scale 5 --gap 6 --out /tmp/radar.png
-python3 scripts/render.py --live --size 72 --scale 8 --out /tmp/scope.png
-python3 scripts/render.py --live --size 72 --no-map --max-icons 0 --out /tmp/plain.png   # classic look
-python3 scripts/render.py --live --size 72 --full --scale 8 --out /tmp/full.png          # square, 100% of the key
-python3 scripts/render.py --demo --size 144 --count-corner top-left --out /tmp/corner.png
-python3 scripts/render.py --live --list --scale 8 --out /tmp/list.png     # the list action
-python3 scripts/render.py --live --list --white --out /tmp/list-white.png
-/usr/local/lib/streamcontroller/bin/python scripts/smoke_app.py  # loads the plugin with the real app code
-```
-
-`radar/` is pure Python (Pillow + requests) and never imports StreamController.
-`scripts/smoke_app.py` runs against an isolated temporary data directory and
-does not touch your StreamController settings.
-
-See [PLAN.md](PLAN.md) for the design and the verified StreamController contracts.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for local setup, the tests, the render CLI,
+regenerating the map data and releasing a new version.
 
 GPL-3.0.

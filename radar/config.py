@@ -3,8 +3,8 @@ from __future__ import annotations
 import math
 from dataclasses import asdict, dataclass
 
-DEFAULT_LAT = 0.0
-DEFAULT_LON = 0.0
+DEFAULT_LAT = 32.5424
+DEFAULT_LON = -116.9702
 RADIUS_CHOICES = (25, 50, 100, 150, 200)
 DEFAULT_RADIUS_KM = 100
 INTERVAL_MIN_S = 30

@@ -105,14 +105,17 @@ class ListFrameTests(unittest.TestCase):
         corner = Aircraft(hex="b", lat=CORNER[0], lon=CORNER[1], callsign="Y")
 
         def frame(version, **config):
-            return FrameCache(list_mode=True).get(snapshot(version=version, config=Config(**config), aircraft=(plane,)), 72).tobytes()
+            return FrameCache(list_mode=True).get(
+                snapshot(version=version, config=Config(lat=0.0, lon=0.0, **config), aircraft=(plane,)), 72
+            ).tobytes()
 
         self.assertNotEqual(frame(1), FrameCache(list_mode=True).get(snapshot(version=2, aircraft=(plane,), stale=True), 72).tobytes())
         self.assertNotEqual(frame(3, colored=True), frame(4, colored=False))
 
         def corner_frame(version, full):
             cache = FrameCache(list_mode=True)
-            return cache.get(snapshot(version=version, config=Config(view="full" if full else "radar"), aircraft=(corner,)), 72).tobytes()
+            config = Config(lat=0.0, lon=0.0, view="full" if full else "radar")
+            return cache.get(snapshot(version=version, config=config, aircraft=(corner,)), 72).tobytes()
 
         self.assertNotEqual(corner_frame(5, False), corner_frame(6, True))
 

@@ -63,6 +63,19 @@ python3 scripts/render.py --demo --size 144 --count-corner top-left --out /tmp/c
 (useful offline), `--live` hits the API. `--gap` simulates the bezel between the
 four keys of a 2x2 block.
 
+## Store artwork
+
+`store/Thumbnail.png` is generated, not hand-drawn:
+
+```
+python3 scripts/store_art.py            # synthetic aircraft, offline
+python3 scripts/store_art.py --live     # real traffic around the default center
+```
+
+The store renders it at 250x90 with `ContentFit.COVER` (that is the size the
+app's plugin card requests), so it is authored at **1000x360**, the same size the
+official plugins use. Regenerate it after changing the UI.
+
 ## Map data
 
 `data/map.json` is generated, not hand-edited:

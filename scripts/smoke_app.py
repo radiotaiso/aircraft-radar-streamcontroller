@@ -85,7 +85,7 @@ def main() -> None:
     stored = json.loads((TMP / "data" / "settings" / "plugins" / "com_idimw_adskey" / "settings.json").read_text())
     check("settings file is v2.0", stored.get("file-version") == "2.0", str(stored))
     check("first-setup preserved", stored["settings"].get("first-setup") is False, str(stored))
-    check("config persisted", stored["settings"].get("radius_km") == 150 and stored["settings"].get("lat") == 0.0, str(stored))
+    check("config persisted", stored["settings"].get("radius_km") == 150 and stored["settings"].get("lat") == 32.5424, str(stored))
     check("service got the config", plugin.service.snapshot().config.radius_km == 150)
     plugin.update_config(radius_km=100)
 
@@ -286,8 +286,8 @@ def main() -> None:
     from plugins.com_idimw_adskey.radar.adsb import Aircraft
 
     plugin.service._raw = (
-        Aircraft(hex="aa0001", lat=0.0120, lon=0.0100, callsign="TEST1", alt_ft=10000),
-        Aircraft(hex="aa0002", lat=0.0020, lon=-0.0150, callsign="TEST2", alt_ft=20000, track=90.0),
+        Aircraft(hex="aa0001", lat=plugin.service.snapshot().config.lat + 0.012, lon=plugin.service.snapshot().config.lon + 0.010, callsign="TEST1", alt_ft=10000),
+        Aircraft(hex="aa0002", lat=plugin.service.snapshot().config.lat + 0.002, lon=plugin.service.snapshot().config.lon - 0.015, callsign="TEST2", alt_ft=20000, track=90.0),
     )
     plugin.service._fetched_at = plugin.service._clock()
     plugin.service.request_redraw()

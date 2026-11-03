@@ -27,8 +27,8 @@ Install it from the StreamController store: open **Plugins → Store**, search f
 The first time you add a radar action, the plugin settings window opens.
 Latitude, longitude, radius, refresh interval, "hide aircraft on the ground",
 "show map outline", "map size", "count position" and "colored aircraft" are set
-once and apply to every radar key. The default center is `0, 0`, so set your
-location there. With colours on, the six nearest aircraft and the six list rows
+once and apply to every radar key. The default center is Tijuana International Airport
+(`32.5424, -116.9702`); change it to your location. With colours on, the six nearest aircraft and the six list rows
 share a palette (red, orange, yellow, green, blue, violet); turning it off draws
 everything in white.
 
@@ -79,5 +79,11 @@ radar still works, just without an outline.
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for local setup, the tests, the render CLI,
 regenerating the map data and releasing a new version.
+
+## AI-assisted
+
+This plugin was built with AI assistance: the code, tests and documentation were
+drafted with an AI coding assistant, then reviewed, run against StreamController
+itself and tested with unit tests, mutation testing and a live deck.
 
 GPL-3.0.

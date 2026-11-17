@@ -193,7 +193,7 @@ class RadarService:
             self._next_poll = self._fetched_at + self._config.interval_s
             self._bump()
         if recovered:
-            self._log.info("sc-adskey: adsb.lol reachable again")
+            self._log.info("sc-adskey: ADSB API reachable again")
 
     def _on_failure(self, config: Config, exc: Exception) -> None:
         with self._lock:

@@ -53,7 +53,7 @@ def build_settings_group(plugin) -> Adw.PreferencesGroup:
 
     group = Adw.PreferencesGroup(
         title="Aircraft Radar",
-        description="Applies to every radar key. Data from api.adsb.lol. Tap a radar key to cycle the radius.",
+        description="Applies to every radar key. Data from api.adsb.fi, with api.adsb.lol as a fallback. Tap a radar key to cycle the radius.",
     )
 
     group.add(

@@ -4,7 +4,7 @@
         "original-url": "https://github.com/radiotaiso/aircraft-radar-streamcontroller",
         "license": "GPL-3.0",
         "license-url": "https://www.gnu.org/licenses/gpl-3.0.txt",
-        "description": "Aircraft Radar plugin for StreamController: live aircraft on one key or a 2x2 block, with a Natural Earth map outline. Data from community ADS-B/MLAT receivers via api.adsb.lol.",
+        "description": "Aircraft Radar plugin for StreamController: live aircraft on one key or a 2x2 block, with a Natural Earth map outline. Data from community ADS-B/MLAT receivers via api.adsb.fi, with api.adsb.lol as a fallback.",
         "license-description": null
     },
     "data/map.json": {

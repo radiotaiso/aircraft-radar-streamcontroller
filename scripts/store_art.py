@@ -5,7 +5,7 @@ The StreamController store shows the thumbnail at 250x90 with ContentFit.COVER,
 so 1000x360 is the 4x size official plugins use.
 
     python3 scripts/store_art.py                  # synthetic aircraft, offline
-    python3 scripts/store_art.py --live            # real aircraft from adsb.lol
+    python3 scripts/store_art.py --live            # real aircraft from the ADSB API
     python3 scripts/store_art.py --out /tmp/art.png
 """
 from __future__ import annotations
@@ -116,7 +116,7 @@ def main() -> int:
     parser.add_argument("--lat", type=float, default=config.DEFAULT_LAT)
     parser.add_argument("--lon", type=float, default=config.DEFAULT_LON)
     parser.add_argument("--km", type=float, default=100)
-    parser.add_argument("--live", action="store_true", help="use real aircraft from adsb.lol")
+    parser.add_argument("--live", action="store_true", help="use real aircraft from the ADSB API")
     args = parser.parse_args()
 
     if args.live:

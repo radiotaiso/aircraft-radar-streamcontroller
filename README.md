@@ -14,7 +14,8 @@ Live aircraft radar for [StreamController](https://github.com/StreamController/S
 
 Tap any radar key to cycle the radius (25 to 200 km in five steps; the labels
 follow the distance unit).
-Data comes from [api.adsb.lol](https://api.adsb.lol) through one shared poller.
+Data comes from [api.adsb.fi](https://adsb.fi), with [api.adsb.lol](https://api.adsb.lol)
+as a fallback, through one shared poller.
 Planes are drawn as small aircraft icons pointing along their track (the
 nearest few; the rest are squares) over a dim map outline of coastlines, lakes,
 state borders and urban areas from [Natural Earth](https://www.naturalearthdata.com)

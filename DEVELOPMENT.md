@@ -25,7 +25,7 @@ Two details that bite:
 python3 -m unittest discover -s tests -t .
 ```
 
-233 tests, no network. They cover the API parsing and config sanitising, every
+240 tests, no network. They cover the API parsing and config sanitising, every
 renderer (radar, full size, mosaic, list, colours, count corner, states), block
 detection, the service (interval, backoff, stale, reconfigure, ground filter),
 the map data format and the build script.
@@ -60,7 +60,7 @@ python3 scripts/render.py --live --list --units mi --scale 8 --out /tmp/list-mi.
 python3 scripts/render.py --demo --size 144 --count-corner top-left --out /tmp/corner.png
 ```
 
-`--demo` uses synthetic aircraft, `--fixture` reads a saved adsb.lol JSON payload
+`--demo` uses synthetic aircraft, `--fixture` reads a saved payload from the ADSB API
 (useful offline), `--live` hits the API. `--gap` simulates the bezel between the
 four keys of a 2x2 block.
 

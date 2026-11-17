@@ -18,7 +18,7 @@ from .radar.frames import FrameCache
 from .radar.service import RadarService
 
 GITHUB = "https://github.com/radiotaiso/aircraft-radar-streamcontroller"
-PLUGIN_VERSION = "1.1.0"
+PLUGIN_VERSION = "1.1.1"
 APP_VERSION = "1.5.0-beta.16"
 
 

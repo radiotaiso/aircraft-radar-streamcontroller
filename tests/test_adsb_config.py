@@ -1,5 +1,7 @@
 import unittest
 
+import requests
+
 from radar import adsb
 from radar.config import DEFAULT_LAT, DEFAULT_LON, RADIUS_CHOICES, Config
 
@@ -58,14 +60,92 @@ class ParseTests(unittest.TestCase):
         )
         self.assertEqual([plane.hex for plane in planes], ["f"])
 
+    def test_adsb_fi_payload_uses_the_aircraft_key(self):
+        planes = adsb.parse(
+            {
+                "aircraft": [{"hex": "x", "lat": 1.0, "lon": 2.0, "alt_baro": "ground", "flight": "ABC1"}],
+                "now": 1.0,
+                "resultCount": 1,
+            }
+        )
+        self.assertEqual([plane.hex for plane in planes], ["x"])
+        self.assertTrue(planes[0].on_ground)
+
     def test_garbage_payloads(self):
-        for payload in (None, [], {}, {"ac": None}, {"ac": "x"}, {"ac": [1, "a", None]}):
+        for payload in (None, [], {}, {"ac": None}, {"ac": "x"}, {"ac": [1, "a", None]}, {"aircraft": "x"}):
             self.assertEqual(adsb.parse(payload), [])
 
     def test_unknown_altitude_is_none(self):
         plane = adsb.parse({"ac": [{"hex": "a", "lat": 1.0, "lon": 2.0}]})[0]
         self.assertIsNone(plane.alt_ft)
         self.assertFalse(plane.on_ground)
+
+
+class _Response:
+    def __init__(self, status=200, payload=None, invalid=False):
+        self.status_code = status
+        self._payload = payload
+        self._invalid = invalid
+
+    def json(self):
+        if self._invalid:
+            raise ValueError("not json")
+        return self._payload
+
+
+class _Session:
+    def __init__(self, *items):
+        self.items = list(items)
+        self.calls = []
+
+    def get(self, url, headers=None, timeout=None):
+        self.calls.append((url, timeout))
+        item = self.items.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+
+class ClientTests(unittest.TestCase):
+    FIXTURE = {"aircraft": [{"hex": "a", "lat": 1.0, "lon": 2.0}]}
+
+    def test_uses_adsb_fi_first_with_the_nautical_radius(self):
+        session = _Session(_Response(payload=self.FIXTURE))
+        planes = adsb.Client(session=session).fetch(20.6558, -103.3982, 100)
+        self.assertEqual([plane.hex for plane in planes], ["a"])
+        self.assertEqual(len(session.calls), 1)
+        self.assertEqual(
+            session.calls[0][0],
+            "https://opendata.adsb.fi/api/v2/lat/20.6558/lon/-103.3982/dist/54",
+        )
+
+    def test_falls_back_to_adsb_lol(self):
+        session = _Session(requests.Timeout("slow"), _Response(payload={"ac": [{"hex": "b", "lat": 1.0, "lon": 2.0}]}))
+        planes = adsb.Client(session=session).fetch(1.0, 2.0, 100)
+        self.assertEqual([plane.hex for plane in planes], ["b"])
+        self.assertEqual(len(session.calls), 2)
+        self.assertIn("api.adsb.lol/v2/point/1.0000/2.0000/54", session.calls[1][0])
+
+    def test_falls_back_on_a_rate_limited_primary(self):
+        session = _Session(_Response(status=429), _Response(payload={"ac": []}))
+        self.assertEqual(adsb.Client(session=session).fetch(1.0, 2.0, 50), [])
+        self.assertEqual(len(session.calls), 2)
+
+    def test_falls_back_on_bad_json(self):
+        session = _Session(_Response(invalid=True), _Response(payload={"aircraft": []}))
+        self.assertEqual(adsb.Client(session=session).fetch(1.0, 2.0, 50), [])
+
+    def test_raises_when_both_endpoints_fail(self):
+        session = _Session(_Response(status=500), requests.ConnectionError("down"))
+        with self.assertRaises(adsb.AdsbError) as caught:
+            adsb.Client(session=session).fetch(1.0, 2.0, 50)
+        self.assertIn("ConnectionError", str(caught.exception))
+        self.assertEqual(len(session.calls), 2)
+
+    def test_timeout_is_passed_to_requests(self):
+        session = _Session(_Response(payload={"aircraft": []}))
+        adsb.Client(timeout=15.0, session=session).fetch(1.0, 2.0, 50)
+        self.assertEqual(session.calls[0][1], 15.0)
 
 
 class KmToNmTests(unittest.TestCase):

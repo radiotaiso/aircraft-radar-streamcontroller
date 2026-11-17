@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from . import mapdata
 from .adsb import Aircraft
 from .config import DEFAULT_COUNT_CORNER
+from .units import DEFAULT_UNIT, format_distance
 
 KEY = 72
 KM_PER_DEG_LAT = 110.57
@@ -366,6 +367,7 @@ def render_list(
     colored: bool = True,
     stale: bool = False,
     full: bool = False,
+    units: str = DEFAULT_UNIT,
 ) -> Image.Image:
     """One key with the nearest aircraft as rows: colour swatch, callsign and distance."""
     canvas = Image.new("RGB", (size, size), BLACK)
@@ -392,7 +394,7 @@ def render_list(
         if colour is not None:
             draw.rectangle([margin, y + 1, margin + swatch - 1, y + pitch - 2], fill=colour)
         callsign = plane.callsign or plane.hex or "?"
-        distance_text = f"{distance:.0f}"
+        distance_text = format_distance(distance, units)
         dist_w = draw.textlength(distance_text, font=small)
         if draw.textlength(callsign, font=font) <= full_width - dist_w - 2:
             label = callsign

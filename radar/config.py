@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 from dataclasses import asdict, dataclass
 
+from .units import DEFAULT_UNIT, UNIT_CHOICES
+
 DEFAULT_LAT = 32.5424
 DEFAULT_LON = -116.9702
 RADIUS_CHOICES = (25, 50, 100, 150, 200)
@@ -48,6 +50,7 @@ class Config:
     view: str = DEFAULT_VIEW
     count_corner: str = DEFAULT_COUNT_CORNER
     colored: bool = True
+    units: str = DEFAULT_UNIT
 
     @property
     def full(self) -> bool:
@@ -79,6 +82,7 @@ class Config:
             view=raw.get("view") if raw.get("view") in VIEW_CHOICES else DEFAULT_VIEW,
             count_corner=raw.get("count_corner") if raw.get("count_corner") in COUNT_CORNERS else DEFAULT_COUNT_CORNER,
             colored=_flag(raw, "colored"),
+            units=raw.get("units") if raw.get("units") in UNIT_CHOICES else DEFAULT_UNIT,
         )
 
     def to_dict(self) -> dict:

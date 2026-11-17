@@ -8,9 +8,15 @@ from gi.repository import Adw, Gtk
 
 from .radar import mapdata
 from .radar.config import COUNT_CORNERS, INTERVAL_MAX_S, INTERVAL_MIN_S, RADIUS_CHOICES, VIEW_CHOICES
+from .radar.units import UNIT_CHOICES, unit_label
 
 
 VIEW_LABELS = ("Radar (circle)", "Full size (square)")
+UNIT_LABELS = {
+    "nm": "Nautical miles (NM)",
+    "km": "Kilometres (km)",
+    "mi": "Miles (mi)",
+}
 CORNER_LABELS = {
     "bottom-right": "Bottom right",
     "bottom-left": "Bottom left",
@@ -78,7 +84,7 @@ def build_settings_group(plugin) -> Adw.PreferencesGroup:
     radius = Adw.ComboRow(
         title="Radius",
         subtitle="Distance from the center to the edge of the radar (or of the key in full size)",
-        model=Gtk.StringList.new([f"{km} km" for km in RADIUS_CHOICES]),
+        model=Gtk.StringList.new([unit_label(km, config.units) for km in RADIUS_CHOICES]),
     )
     radius.set_selected(RADIUS_CHOICES.index(config.radius_km))
 
@@ -89,6 +95,25 @@ def build_settings_group(plugin) -> Adw.PreferencesGroup:
 
     radius.connect("notify::selected", on_radius)
     group.add(radius)
+
+    units = Adw.ComboRow(
+        title="Distance unit",
+        subtitle="Aviation is nautical miles. Applies to the list key and to the radius labels",
+        model=Gtk.StringList.new([UNIT_LABELS[name] for name in UNIT_CHOICES]),
+    )
+    units.set_selected(UNIT_CHOICES.index(config.units))
+
+    def on_units(widget, _param):
+        index = widget.get_selected()
+        if index == Gtk.INVALID_LIST_POSITION:
+            return
+        unit = UNIT_CHOICES[index]
+        updated = plugin.update_config(units=unit)
+        radius.set_model(Gtk.StringList.new([unit_label(km, unit) for km in RADIUS_CHOICES]))
+        radius.set_selected(RADIUS_CHOICES.index(updated.radius_km))
+
+    units.connect("notify::selected", on_units)
+    group.add(units)
 
     view = Adw.ComboRow(
         title="Map size",

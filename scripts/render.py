@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from PIL import Image  # noqa: E402
 
-from radar import adsb, config, render  # noqa: E402
+from radar import adsb, config, render, units  # noqa: E402
 
 DEMO = (
     (12.0, 40.0, 270.0),
@@ -70,6 +70,7 @@ def main() -> int:
     parser.add_argument("--no-map", action="store_true", help="draw without the map outline")
     parser.add_argument("--full", action="store_true", help="fill the whole key (square) instead of the round radar")
     parser.add_argument("--count-corner", default=config.DEFAULT_COUNT_CORNER, choices=config.COUNT_CORNERS)
+    parser.add_argument("--units", default=units.DEFAULT_UNIT, choices=units.UNIT_CHOICES, help="distance unit for the list")
     parser.add_argument("--max-icons", type=int, default=None, help="plane icons before falling back to squares (0 = squares only)")
     parser.add_argument("--scale", type=int, default=1, help="nearest-neighbour upscale for viewing")
     parser.add_argument("--gap", type=int, default=0, help="simulate the bezel between the 4 keys (size 144)")
@@ -102,6 +103,7 @@ def main() -> int:
                 colored=not args.white,
                 stale=args.stale,
                 full=args.full,
+                units=args.units,
             )
         else:
             frame = render.render_radar(

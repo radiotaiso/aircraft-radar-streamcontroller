@@ -145,6 +145,15 @@ class ConfigTests(unittest.TestCase):
         for bad in ("no", 0, 1, None, [], {}):
             self.assertTrue(Config.from_dict({"colored": bad}).colored, bad)
 
+    def test_units_default_to_nautical_miles(self):
+        self.assertEqual(Config.from_dict({}).units, "nm")
+
+    def test_units_accept_only_known_values(self):
+        for unit in ("nm", "km", "mi"):
+            self.assertEqual(Config.from_dict({"units": unit}).units, unit)
+        for bad in ("NM", "miles", "kilometers", "", None, 1, True, ["km"]):
+            self.assertEqual(Config.from_dict({"units": bad}).units, "nm", bad)
+
     def test_show_map_can_be_turned_off(self):
         self.assertFalse(Config.from_dict({"show_map": False}).show_map)
 
@@ -174,6 +183,7 @@ class ConfigTests(unittest.TestCase):
             view="full",
             count_corner="top-left",
             colored=False,
+            units="mi",
         )
         self.assertEqual(Config.from_dict(cfg.to_dict()), cfg)
 

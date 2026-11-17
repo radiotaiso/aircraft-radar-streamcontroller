@@ -4,7 +4,7 @@ import unittest
 
 from PIL import Image, ImageChops, ImageDraw, ImageStat
 
-from radar import mapdata, render
+from radar import mapdata, render, units
 from radar.adsb import Aircraft
 
 CENTER = (0.0, 0.0)
@@ -785,6 +785,36 @@ class ListRenderTests(unittest.TestCase):
         plane = at_offset(east_km=10, hex="0d0e29")
         image = render.render_list([plane], CENTER, 100, 72)
         self.assertNotEqual(image.tobytes(), render.render_list([], CENTER, 100, 72).tobytes())
+
+    def test_distance_is_shown_in_the_chosen_unit(self):
+        plane = at_offset(east_km=100, hex="a", callsign="A")
+        km = render.render_list([plane], CENTER, 100, 72, units="km")
+        nm = render.render_list([plane], CENTER, 100, 72, units="nm")
+        mi = render.render_list([plane], CENTER, 100, 72, units="mi")
+        self.assertNotEqual(km.tobytes(), nm.tobytes())
+        self.assertNotEqual(km.tobytes(), mi.tobytes())
+
+    def test_list_defaults_to_the_settings_unit(self):
+        plane = at_offset(east_km=50, hex="a", callsign="A")
+        self.assertEqual(
+            render.render_list([plane], CENTER, 100, 72).tobytes(),
+            render.render_list([plane], CENTER, 100, 72, units=units.DEFAULT_UNIT).tobytes(),
+        )
+
+    def test_nautical_miles_take_less_room_than_kilometres(self):
+        draw = ImageDraw.Draw(Image.new("RGB", (72, 72)))
+        font = render._font(8)
+        nm = draw.textlength(units.format_distance(100, "nm"), font=font)
+        km = draw.textlength(units.format_distance(100, "km"), font=font)
+        self.assertLess(nm, km)
+        # 100 km is "100" in km and "54" in NM, and this callsign only fits next to the shorter one.
+        plane = at_offset(east_km=100, hex="a", callsign="AMX363")
+
+        def grey(image):
+            return sum(1 for x in range(72) for y in range(72) if image.getpixel((x, y)) == render.GREY)
+
+        self.assertGreater(grey(render.render_list([plane], CENTER, 100, 72, units="nm")), 0)
+        self.assertEqual(grey(render.render_list([plane], CENTER, 100, 72, units="km")), 0)
 
     def test_long_callsigns_drop_the_distance_instead_of_truncating(self):
         long_plane = at_offset(east_km=50, hex="a", callsign="N3695W1")

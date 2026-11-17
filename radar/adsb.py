@@ -5,8 +5,9 @@ from dataclasses import dataclass
 
 import requests
 
-VERSION = "1.0.0"
-KM_PER_NM = 1.852
+from .units import KM_PER_NM
+
+VERSION = "1.1.0"
 MAX_NM = 250
 USER_AGENT = f"aircraft-radar/{VERSION} (+https://github.com/radiotaiso/aircraft-radar-streamcontroller)"
 ENDPOINT = "https://api.adsb.lol/v2/point/{lat:.4f}/{lon:.4f}/{nm}"

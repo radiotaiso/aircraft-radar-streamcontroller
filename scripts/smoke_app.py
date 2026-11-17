@@ -192,16 +192,46 @@ def main() -> None:
     collect(group)
     kinds = sorted(type(row).__name__ for row in rows)
     check(
-        "settings rows: 3 spin, 3 combo, 3 switch",
+        "settings rows: 3 spin, 4 combo, 3 switch",
         kinds
-        == ["ComboRow", "ComboRow", "ComboRow", "SpinRow", "SpinRow", "SpinRow", "SwitchRow", "SwitchRow", "SwitchRow"],
+        == [
+            "ComboRow",
+            "ComboRow",
+            "ComboRow",
+            "ComboRow",
+            "SpinRow",
+            "SpinRow",
+            "SpinRow",
+            "SwitchRow",
+            "SwitchRow",
+            "SwitchRow",
+        ],
         str(kinds),
     )
 
     combos = {r.get_title(): r for r in rows if isinstance(r, Adw.ComboRow)}
-    check("all combos are present", set(combos) == {"Radius", "Map size", "Count position"}, str(set(combos)))
+    check(
+        "all combos are present",
+        set(combos) == {"Radius", "Map size", "Count position", "Distance unit"},
+        str(set(combos)),
+    )
     combos["Radius"].set_selected(4)
     check("combo row writes the radius", plugin.service.snapshot().config.radius_km == 200)
+
+    units_row = combos["Distance unit"]
+    unit_labels = [units_row.get_model().get_string(i) for i in range(units_row.get_model().get_n_items())]
+    check("distance unit offers nm, km and mi", unit_labels == ["Nautical miles (NM)", "Kilometres (km)", "Miles (mi)"], str(unit_labels))
+    check("distance unit defaults to nautical miles", units_row.get_selected() == 0 and plugin.service.snapshot().config.units == "nm")
+    radius_labels_km = [combos["Radius"].get_model().get_string(i) for i in range(combos["Radius"].get_model().get_n_items())]
+    units_row.set_selected(2)
+    snap_units = plugin.service.snapshot()
+    check("distance unit writes the setting", snap_units.config.units == "mi")
+    stored_units = json.loads((TMP / "data" / "settings" / "plugins" / "com_aircraft_radar" / "settings.json").read_text())["settings"]
+    check("the unit reaches the settings file", stored_units.get("units") == "mi", str(stored_units))
+    radius_labels_mi = [combos["Radius"].get_model().get_string(i) for i in range(combos["Radius"].get_model().get_n_items())]
+    check("radius labels follow the unit", radius_labels_km != radius_labels_mi and radius_labels_mi[2].endswith("mi"), str(radius_labels_mi))
+    units_row.set_selected(0)
+    check("the radius keeps its size when the unit changes", plugin.service.snapshot().config.radius_km == 200)
 
     view_row = combos["Map size"]
     labels = [view_row.get_model().get_string(i) for i in range(view_row.get_model().get_n_items())]

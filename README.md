@@ -8,10 +8,12 @@ Live aircraft radar for [StreamController](https://github.com/StreamController/S
   tiles as an aligned 2x2 block; the shape is detected automatically. Any other
   shape shows `!`.
 - **Radar list (1 key)** — the nearest aircraft as rows: colour swatch, callsign
-  and distance. Up to six rows; the swatch colour matches the same aircraft on
-  the radar keys, so a row and a dot can be paired.
+  and distance in the unit chosen in the settings (nautical miles by default).
+  Up to six rows; the swatch colour matches the same aircraft on the radar keys,
+  so a row and a dot can be paired.
 
-Tap any radar key to cycle the radius (25 / 50 / 100 / 150 / 200 km).
+Tap any radar key to cycle the radius (25 to 200 km in five steps; the labels
+follow the distance unit).
 Data comes from [api.adsb.lol](https://api.adsb.lol) through one shared poller.
 Planes are drawn as small aircraft icons pointing along their track (the
 nearest few; the rest are squares) over a dim map outline of coastlines, lakes,
@@ -25,12 +27,17 @@ Install it from the StreamController store: open **Plugins → Store**, search f
 "Aircraft Radar" and install it. Then drop any of the three actions on your deck.
 
 The first time you add a radar action, the plugin settings window opens.
-Latitude, longitude, radius, refresh interval, "hide aircraft on the ground",
-"show map outline", "map size", "count position" and "colored aircraft" are set
-once and apply to every radar key. The default center is Tijuana International Airport
+Latitude, longitude, radius, distance unit, refresh interval, "hide aircraft on
+the ground", "show map outline", "map size", "count position" and "colored
+aircraft" are set once and apply to every radar key. The default center is Tijuana International Airport
 (`32.5424, -116.9702`); change it to your location. With colours on, the six nearest aircraft and the six list rows
 share a palette (red, orange, yellow, green, blue, violet); turning it off draws
 everything in white.
+
+**Distance unit** sets how distances are written on the list key and in the
+radius labels: nautical miles (the aviation default), kilometres or statute
+miles. The plugin always works in kilometres internally, so changing the unit
+never changes what the radar scans.
 
 **Count position** picks which of the four outer corners shows how many aircraft
 are visible: bottom right (default), bottom left, top right or top left. On a 2x2

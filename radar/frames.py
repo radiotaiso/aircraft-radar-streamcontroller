@@ -31,6 +31,7 @@ class FrameCache:
                     colored=config.colored,
                     stale=snapshot.stale,
                     full=config.full,
+                    units=config.units,
                 )
             else:
                 image = self._render(
